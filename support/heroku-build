@@ -37,7 +37,4 @@ heroku apps:destroy $app --confirm $app
 
 # download the file off s3
 echo Downloading log file
-wget "https://heroku-buildpack-r.s3.amazonaws.com/build-r-$build_no.log"
-
-echo Downloading binaries file
-wget "https://heroku-buildpack-r.s3.amazonaws.com/R-$r_version-binaries-$build_no.tar.gz"
+wget "https://wm-buildpack.s3.amazonaws.com/build-r-$build_no.log"
