@@ -39,6 +39,24 @@ function build() {
 
 }
 
+function buildWithCmake() {
+  echo ----------------------------------------------------------------------
+  echo Building $@...
+  echo ----------------------------------------------------------------------
+  echo
+  pushd $1
+    mkdir $vendordir/$2
+    cmake -D CMAKE_INSTALL_PREFIX=$vendordir/$2 . && make && make install && make clean
+  popd > /dev/null
+  echo
+  echo
+
+  # add to libraries and pkg-config
+  export LD_LIBRARY_PATH="$vendordir/$2:$LD_LIBRARY_PATH"
+  export PKG_CONFIG_PATH="$vendordir/$2/lib/pkgconfig:$PKG_CONFIG_PATH"
+
+}
+
 ## SCRIPT
 
 r_version="${1:-2.15.1}"
@@ -65,6 +83,17 @@ mkdir -p $vendordir
 echo ======================================================================
 echo Downloading and unpacking dependancies...
 echo ======================================================================
+
+# http://www.cmake.org
+cmake_version=2.8.12.1
+cmake_ver_major=${cmake_version:0:3}
+download "http://downloads.cmake.org/files/v$cmake_ver_major/cmake-$cmake_version.tar.gz" cmake-$cmake_version.tar.gz
+tar xzf cmake-$cmake_version.tar.gz
+
+# http://opencv.org/
+opencv_version=2.4.7
+download "http://heanet.dl.sourceforge.net/project/opencvlibrary/opencv-unix/$opencv_version/opencv-$opencv_version.tar.gz" opencv-$opencv_version.tar.gz
+tar xzf opencv-$opencv_version.tar.gz
 
 # http://www.freetype.org/freetype2/
 freetype_version=2.5.0
@@ -122,6 +151,9 @@ echo ============================================================
 echo Building dependencies...
 echo ======================================================================
 
+build "$basedir/cmake-$cmake_version" cmake
+export PATH="$vendordir/cmake/bin:$PATH"
+buildWithCmake "$basedir/opencv-$opencv_version" opencv
 build "$basedir/freetype-$freetype_version" freetype
 build "$basedir/DirectFB-$directfb_version" DirectFB
 build "$basedir/libpng-$libpng_version" libpng
@@ -152,7 +184,7 @@ popd
 
 # upload to S3 bucket
 pushd $vendordir
-tar czf "R-$r_version-binaries-$build_no.tar.gz" freetype DirectFB libpng pixman fontconfig cairo R
+tar czf "R-$r_version-binaries-$build_no.tar.gz" opencv freetype DirectFB libpng pixman fontconfig cairo R
 popd
 
 bundle exec ruby ./s3_upload.rb "$vendordir/R-$r_version-binaries-$build_no.tar.gz"
