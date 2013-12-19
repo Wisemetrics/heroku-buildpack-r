@@ -57,8 +57,8 @@ cp -R $VENDOR_DIR/* /app/vendor/
 # setup environment for building packages
 export PATH=/app/vendor/R/bin:/app/vendor/gcc/bin:$PATH
 
-export LDFLAGS="-L/app/vendor/gcc/lib64/ -L/app/vendor/gsl/lib/"
-export CPPFLAGS="-I/app/vendor/glibc/string/ -I/app/vendor/glibc/time -I/app/vendor/gsl/include/"
+export LDFLAGS="-L/app/vendor/gcc/lib64/ -L/app/vendor/gsl/lib/ -L/app/vendor/opencv/lib"
+export CPPFLAGS="-I/app/vendor/glibc/string/ -I/app/vendor/glibc/time -I/app/vendor/gsl/include/ -I/app/vendor/opencv/include"
 export PKG_LDFLAGS=$LDFLAGS
 export PKG_CPPFLAGS=$CPPFLAGS
 
