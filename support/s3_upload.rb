@@ -18,7 +18,7 @@ AWS.config(
 
 s3 = AWS::S3.new
 
-bucket = s3.buckets['heroku-buildpack-r']
+bucket = s3.buckets['wm-buildpack']
 
 obj = bucket.objects[obj_name]
 obj.write(Pathname.new(file))
